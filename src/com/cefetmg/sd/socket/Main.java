@@ -34,10 +34,10 @@ public class Main {
                 String selected = (String) entrada.readObject();
                 System.out.println("Selected music: " + selected);
 
-                AudioInputStream stream = AudioSystem.getAudioInputStream(new File("C:\\Users\\lucas\\Downloads\\coldplay_hymn_for_the_weekend_alan_walker_remix_music_video_64kbps.wav")
-                );
-//    stream = AudioSystem.getAudioInputStream(new URL(
-                //      "http://hostname/audiofile"));
+                AudioInputStream stream = AudioSystem
+                        .getAudioInputStream(
+                                new File("C:\\Users\\lucas\\Downloads\\coldplay_hymn_for_the_weekend_alan_walker_remix_music_video_64kbps.wav")
+                        );
 
                 AudioFormat format = stream.getFormat();
                 if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
@@ -50,15 +50,26 @@ public class Main {
 
                 SourceDataLine.Info info = new DataLine.Info(SourceDataLine.class, stream
                         .getFormat(), ((int) stream.getFrameLength() * format.getFrameSize()));
-//                entrada.close();
+                SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
+                line.open(stream.getFormat());
+                line.start();
 
-                System.out.println("Sending music");
-                saida.flush();
-                saida.writeObject(
-                        info
-                );
+                int numRead = 0;
+                byte[] buf = new byte[line.getBufferSize()];
+                while ((numRead = stream.read(buf, 0, buf.length)) >= 0) {
+//                    int offset = 0;
+//                    while (offset < numRead) {
+//                        offset += line.write(buf, offset, numRead - offset);
+//                    }
+                    saida.flush();
+                    saida.writeObject(
+                           buf
+                    );
 
-
+                    Thread.sleep(800);
+                }
+                line.drain();
+                line.stop();
             }
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
