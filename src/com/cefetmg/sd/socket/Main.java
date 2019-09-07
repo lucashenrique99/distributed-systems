@@ -37,13 +37,14 @@ public class Main {
                 FileInputStream in = new FileInputStream(soundFile);
                 OutputStream out = cliente.getOutputStream();
 
-                byte buffer[] = new byte[2048];
+                byte[] buffer = new byte[2048];
                 int count;
                 int sendCount = 0;
                 while ((count = in.read(buffer)) != -1) {
                     out.write(buffer, 0, count);
                     System.out.println("Send count: " + sendCount);
                     sendCount++;
+                    Thread.sleep(10);
                 }
 
 
